@@ -1,0 +1,35 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Claude
+.claude/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# Foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Weave
+.weave/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keys / secrets
+*.pem
+*.key
+keystore/

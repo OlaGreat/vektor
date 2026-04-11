@@ -1,0 +1,15 @@
+{
+  "track": "AI & Tooling",
+  "project_name": "Vektor",
+  "description": "An AI agent that autonomously optimizes Initia positions via VIP gauge analysis, LP staking, and esINIT compounding across rollups.",
+  "rollup_chain_id": "vektor-1",
+  "contract_addresses": {
+    "VektorVault": "",
+    "StrategyExecutor": ""
+  },
+  "interwovenkit": true,
+  "native_features": ["auto-signing", "interwoven-bridge", "initia-usernames"],
+  "demo_video": "",
+  "repository": "",
+  "team": []
+}

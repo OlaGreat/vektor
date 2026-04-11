@@ -1,0 +1,57 @@
+{
+  "l1_config": {
+    "chain_id": "initiation-2",
+    "rpc_url": "https://rpc.testnet.initia.xyz:443",
+    "gas_prices": "0.015uinit"
+  },
+  "l2_config": {
+    "chain_id": "vektor-1",
+    "denom": "uvektor",
+    "moniker": "vektor"
+  },
+  "op_bridge": {
+    "output_submission_interval": "200s",
+    "output_finalization_period": "100s",
+    "output_submission_start_height": 1,
+    "batch_submission_target": "INITIA",
+    "enable_oracle": true
+  },
+  "system_keys": {
+    "validator": {
+      "l1_address": "init1y6m4z2hyvwnl5h8alkq7p7mu048tgc3ttfugnv",
+      "l2_address": "init1y6m4z2hyvwnl5h8alkq7p7mu048tgc3ttfugnv",
+      "mnemonic": "fitness cherry truth ice evolve host waste rigid small live beauty side bag surprise weasel spy cotton person style emerge dune update nut aerobic"
+    },
+    "bridge_executor": {
+      "l1_address": "init1w8u2yctqmh9ts83qc7je5xzasr4yhrlh5x7g3x",
+      "l2_address": "init1w8u2yctqmh9ts83qc7je5xzasr4yhrlh5x7g3x",
+      "mnemonic": "shrug lunar glare trial embrace setup earth scrub mandate settle spin craft parrot spring supreme champion base couch toddler junk ensure pause photo sister"
+    },
+    "output_submitter": {
+      "l1_address": "init1plwd5yg86klx2w30c3ry97dntzndga2nsuwv0z",
+      "l2_address": "init1plwd5yg86klx2w30c3ry97dntzndga2nsuwv0z",
+      "mnemonic": "material emotion moon visa patient debate antique cargo wing organ resemble amount fancy robot submit govern concert orbit real agent drastic cave grief swap"
+    },
+    "batch_submitter": {
+      "l1_address": "init1yq7p28qf6re59z9nemnxet6mx0cn0av4lge8zv",
+      "l2_address": "init1yq7p28qf6re59z9nemnxet6mx0cn0av4lge8zv",
+      "da_address": "init1yq7p28qf6re59z9nemnxet6mx0cn0av4lge8zv",
+      "mnemonic": "trade believe pool bar forget uncle isolate scare valve welcome task mention settle wrist language riot coil region verify remove decade behind tribe beauty"
+    },
+    "challenger": {
+      "l1_address": "init1gtt0mg0n4w4ff8nkycgg20xhq5dnvx9qpfnpq9",
+      "l2_address": "init1gtt0mg0n4w4ff8nkycgg20xhq5dnvx9qpfnpq9",
+      "mnemonic": "trigger pact panda moment hard gossip raccoon text cigar describe jaguar truck indoor ancient amused scale fence oxygen vast favorite wedding artist write food"
+    }
+  },
+  "genesis_accounts": [
+    {
+      "address": "init1yhh7p30q2mat7pg6u7qyxwuq9p3pta77e0fzsf",
+      "coins": "100000000000uvektor"
+    },
+    {
+      "address": "init1y6m4z2hyvwnl5h8alkq7p7mu048tgc3ttfugnv",
+      "coins": "100000000000uvektor"
+    }
+  ]
+}

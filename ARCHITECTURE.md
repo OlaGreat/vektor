@@ -33,7 +33,7 @@ Vektor is a cross-rollup AI agent built on Initia's MiniEVM. It continuously opt
 │                                                                 │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                  Strategy Reasoner                       │   │
-│  │  • Parses user goal (natural language → structured plan) │   │
+│  │  • Parses user goal (naturalg language → structured plan) │   │
 │  │  • Reads gauge weights from Initia L1 via Initia MCP    │   │
 │  │  • Identifies underweighted rollups (alpha detection)   │   │
 │  │  • Decides: bridge | stake | vote | compound | wait     │   │
