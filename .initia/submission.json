@@ -4,8 +4,9 @@
   "description": "An AI agent that autonomously optimizes Initia positions via VIP gauge analysis, LP staking, and esINIT compounding across rollups.",
   "rollup_chain_id": "vektor-1",
   "contract_addresses": {
-    "VektorVault": "",
-    "StrategyExecutor": ""
+    "VektorVault": "0x445e8C428655Cf91CE510d9d876aBE715EE75ac8",
+    "StrategyExecutor": "0xC2e132006A515be064f57F34b05e6e9B002BC607",
+    "MockUSDC": "0x0b3c3C2d718c1eEe8eD2988f4126a11Eb3Df51DF"
   },
   "interwovenkit": true,
   "native_features": ["auto-signing", "interwoven-bridge", "initia-usernames"],
