@@ -17,7 +17,16 @@ const EXECUTOR_ABI = [
   "function getPrices(string[] memory pairs) view returns (uint256[] memory prices, uint256[] memory timestamps)",
 ];
 
-const ORACLE_PAIRS = ["INIT/USD", "BTC/USD", "ETH/USD", "USDC/USD"];
+const ORACLE_PAIRS = ["BTC/USD", "ETH/USD", "USDC/USD", "SOL/USD"];
+
+// Maps oracle pair → CoinGecko coin id for fallback
+const COINGECKO_IDS: Record<string, string> = {
+  "BTC/USD":  "bitcoin",
+  "ETH/USD":  "ethereum",
+  "USDC/USD": "usd-coin",
+  "SOL/USD":  "solana",
+  "INIT/USD": "initia",
+};
 
 // ─── Provider & contracts ─────────────────────────────────────────────────────
 
@@ -42,9 +51,39 @@ async function fetchVaultState(provider: ethers.JsonRpcProvider): Promise<{
   return { totalAssets, totalShares };
 }
 
+// ─── CoinGecko fallback ───────────────────────────────────────────────────────
+
+interface CoinGeckoResponse {
+  [coinId: string]: { usd: number };
+}
+
+async function fetchCoinGeckoPrices(pairs: string[]): Promise<Map<string, number>> {
+  const ids = [...new Set(pairs.map((p) => COINGECKO_IDS[p]).filter(Boolean))];
+  if (ids.length === 0) return new Map();
+  try {
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(",")}&vs_currencies=usd`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`CoinGecko HTTP ${res.status}`);
+    const data = (await res.json()) as CoinGeckoResponse;
+    const map = new Map<string, number>();
+    for (const pair of pairs) {
+      const id = COINGECKO_IDS[pair];
+      if (id && data[id]?.usd) map.set(pair, data[id].usd);
+    }
+    return map;
+  } catch (err) {
+    console.warn("[chain] CoinGecko fallback failed:", (err as Error).message);
+    return new Map();
+  }
+}
+
+// ─── Oracle fetch with CoinGecko fallback ────────────────────────────────────
+
 async function fetchOraclePrices(
   provider: ethers.JsonRpcProvider
 ): Promise<OraclePrice[]> {
+  // Try Connect Oracle first (works on mainnet / oracle-enabled testnet)
+  let onchainPrices: Map<string, { price: number; timestamp: number }> = new Map();
   try {
     const executor = new ethers.Contract(
       config.executorAddress,
@@ -55,23 +94,31 @@ async function fetchOraclePrices(
       bigint[],
       bigint[],
     ];
-    return ORACLE_PAIRS.map((pair, i) => ({
-      pair,
-      // Prices from Connect Oracle are in 1e8 fixed-point by convention
-      price: Number(prices[i]) / 1e8,
-      decimals: 8,
-      timestamp: Number(timestamps[i]),
-    }));
-  } catch (err) {
-    // Oracle may not have data for all pairs on testnet — return zeroes
-    console.warn("[chain] oracle fetch failed:", (err as Error).message);
-    return ORACLE_PAIRS.map((pair) => ({
-      pair,
-      price: 0,
-      decimals: 8,
-      timestamp: 0,
-    }));
+    for (let i = 0; i < ORACLE_PAIRS.length; i++) {
+      const price = Number(prices[i]) / 1e8;
+      if (price > 0) {
+        onchainPrices.set(ORACLE_PAIRS[i], { price, timestamp: Number(timestamps[i]) });
+      }
+    }
+  } catch {
+    // Oracle contract reverted — all pairs will fall back to CoinGecko
   }
+
+  // For pairs with 0 price, fall back to CoinGecko
+  const missingPairs = ORACLE_PAIRS.filter((p) => !onchainPrices.has(p));
+  const fallbackPrices = missingPairs.length > 0
+    ? await fetchCoinGeckoPrices(missingPairs)
+    : new Map<string, number>();
+
+  const now = Math.floor(Date.now() / 1000);
+  return ORACLE_PAIRS.map((pair) => {
+    const onchain = onchainPrices.get(pair);
+    if (onchain) {
+      return { pair, price: onchain.price, decimals: 8, timestamp: onchain.timestamp, source: "oracle" as const };
+    }
+    const fallback = fallbackPrices.get(pair) ?? 0;
+    return { pair, price: fallback, decimals: 8, timestamp: now, source: "coingecko" as const };
+  });
 }
 
 // ─── Cosmos REST queries ──────────────────────────────────────────────────────

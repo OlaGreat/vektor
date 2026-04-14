@@ -3,6 +3,7 @@ export interface OraclePrice {
   price: number;
   decimals: number;
   timestamp: number;
+  source?: "oracle" | "coingecko";
 }
 
 export interface VaultState {
