@@ -1,7 +1,11 @@
-"use client";
-
+import type { Metadata } from "next";
 import "./globals.css";
-import { InterwovenKitProvider, TESTNET } from "@initia/interwovenkit-react";
+import Providers from "@/components/Providers";
+
+export const metadata: Metadata = {
+  title: "Vektor — AI Position Optimizer",
+  description: "AI agent that autonomously optimizes your Initia positions",
+};
 
 export default function RootLayout({
   children,
@@ -11,12 +15,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Vektor — AI Position Optimizer</title>
-        <meta
-          name="description"
-          content="AI agent that autonomously optimizes your Initia positions"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
@@ -24,9 +22,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <InterwovenKitProvider {...TESTNET}>
-          {children}
-        </InterwovenKitProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
