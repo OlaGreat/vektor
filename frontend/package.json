@@ -11,11 +11,16 @@
   "dependencies": {
     "@initia/icons-react": "^2.1.0",
     "@initia/interwovenkit-react": "^2.6.0",
+    "@rainbow-me/rainbowkit": "^2.2.10",
     "@tanstack/react-query": "^5.99.0",
+    "@wagmi/core": "^3.4.2",
     "ethers": "^6.13.4",
+    "jotai": "^2.19.1",
     "next": "^15.3.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "viem": "^2.47.18",
+    "wagmi": "^2.17.2"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
