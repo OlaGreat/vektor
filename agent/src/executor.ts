@@ -55,6 +55,8 @@ const DEPLOYER = config.deployerPrivateKey
   : ethers.ZeroAddress;
 
 async function executeAction(action: AgentAction): Promise<void> {
+  // Guard: ensure params object always exists
+  action.params = action.params ?? {};
   switch (action.type) {
     case "LOG_REASONING": {
       const note = String(action.params.note ?? "");

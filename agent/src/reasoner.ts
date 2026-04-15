@@ -8,6 +8,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "./config.js";
+import { fetchIPv4 } from "./fetch.js";
 import type { AgentDecision, ChainState } from "./types.js";
 
 // ─── Prompts ──────────────────────────────────────────────────────────────────
@@ -123,7 +124,16 @@ async function tryOpenRouterModel(
   model: string,
   state: ChainState
 ): Promise<AgentDecision> {
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const body = JSON.stringify({
+    model,
+    max_tokens: 1024,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: buildUserPrompt(state) },
+    ],
+  });
+
+  const res = await fetchIPv4("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${config.openrouterApiKey}`,
@@ -132,15 +142,8 @@ async function tryOpenRouterModel(
       "X-Title": "Vektor Agent",
       "User-Agent": "VektorAgent/1.0",
     },
-    body: JSON.stringify({
-      model,
-      max_tokens: 1024,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: buildUserPrompt(state) },
-      ],
-    }),
-    signal: AbortSignal.timeout(20000),
+    body,
+    timeoutMs: 20000,
   });
 
   if (!res.ok) {

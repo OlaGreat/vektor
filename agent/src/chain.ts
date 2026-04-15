@@ -4,6 +4,7 @@
 
 import { ethers } from "ethers";
 import { config } from "./config.js";
+import { fetchIPv4 } from "./fetch.js";
 import type { ChainState, GaugeWeight, OraclePrice } from "./types.js";
 
 // ─── ABIs (minimal) ──────────────────────────────────────────────────────────
@@ -62,9 +63,9 @@ async function fetchCoinGeckoPrices(pairs: string[]): Promise<Map<string, number
   if (ids.length === 0) return new Map();
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(",")}&vs_currencies=usd`;
-    const res = await fetch(url, {
-      signal: AbortSignal.timeout(8000),
+    const res = await fetchIPv4(url, {
       headers: { "User-Agent": "VektorAgent/1.0" },
+      timeoutMs: 8000,
     });
     if (!res.ok) throw new Error(`CoinGecko HTTP ${res.status}`);
     const data = (await res.json()) as CoinGeckoResponse;
@@ -137,7 +138,7 @@ interface GaugeResponse {
 async function fetchGaugeWeights(): Promise<GaugeWeight[]> {
   try {
     const url = `${config.l1RestUrl}/initia/mstaking/v1/gauges`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    const res = await fetchIPv4(url, { timeoutMs: 8000 });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = (await res.json()) as GaugeResponse;
     const gauges = data.gauges ?? [];
