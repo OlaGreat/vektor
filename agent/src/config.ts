@@ -37,7 +37,8 @@ function optional(key: string, fallback: string): string {
 }
 
 export const config = {
-  claudeApiKey: required("CLAUDE_API_KEY"),
+  claudeApiKey: optional("CLAUDE_API_KEY", ""),
+  openrouterApiKey: optional("OPENROUTER_API_KEY", ""),
   deployerPrivateKey: required("DEPLOYER_PRIVATE_KEY"),
 
   evmRpcUrl: optional("NEXT_PUBLIC_EVM_RPC_URL", "http://localhost:8545"),
