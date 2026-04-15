@@ -62,7 +62,10 @@ async function fetchCoinGeckoPrices(pairs: string[]): Promise<Map<string, number
   if (ids.length === 0) return new Map();
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(",")}&vs_currencies=usd`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(8000),
+      headers: { "User-Agent": "VektorAgent/1.0" },
+    });
     if (!res.ok) throw new Error(`CoinGecko HTTP ${res.status}`);
     const data = (await res.json()) as CoinGeckoResponse;
     const map = new Map<string, number>();

@@ -70,7 +70,7 @@ Analyze this state and decide on the optimal strategy action. Consider:
 2. Are gauge weights aligned with expected APY for each rollup?
 3. What is the current risk posture given vault TVL?
 
-Respond with your decision as JSON only.`;
+Respond with your decision as JSON only. Do not include any text before or after the JSON object.`;
 }
 
 function parseDecision(text: string): AgentDecision {
@@ -107,14 +107,22 @@ async function reasonWithClaude(state: ChainState): Promise<AgentDecision> {
 
 // ─── OpenRouter ───────────────────────────────────────────────────────────────
 
-const OPENROUTER_MODEL = "google/gemma-4-31b-it:free";
+// Models known to be fast and free on OpenRouter (fallback order)
+const OPENROUTER_MODELS = [
+  "minimax/minimax-m2.5:free",
+  "liquid/lfm-2.5-1.2b-instruct:free",
+  "openrouter/free",
+];
 
 interface OpenRouterResponse {
   choices: Array<{ message: { content: string } }>;
   error?: { message: string };
 }
 
-async function reasonWithOpenRouter(state: ChainState): Promise<AgentDecision> {
+async function tryOpenRouterModel(
+  model: string,
+  state: ChainState
+): Promise<AgentDecision> {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -122,16 +130,17 @@ async function reasonWithOpenRouter(state: ChainState): Promise<AgentDecision> {
       "Content-Type": "application/json",
       "HTTP-Referer": "https://github.com/vektor-initia",
       "X-Title": "Vektor Agent",
+      "User-Agent": "VektorAgent/1.0",
     },
     body: JSON.stringify({
-      model: OPENROUTER_MODEL,
+      model,
       max_tokens: 1024,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: buildUserPrompt(state) },
       ],
     }),
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(20000),
   });
 
   if (!res.ok) {
@@ -142,6 +151,18 @@ async function reasonWithOpenRouter(state: ChainState): Promise<AgentDecision> {
   const data = (await res.json()) as OpenRouterResponse;
   const text = data.choices?.[0]?.message?.content ?? "";
   return parseDecision(text);
+}
+
+async function reasonWithOpenRouter(state: ChainState): Promise<AgentDecision> {
+  for (const model of OPENROUTER_MODELS) {
+    try {
+      console.log(`[reasoner] Trying OpenRouter model: ${model}`);
+      return await tryOpenRouterModel(model, state);
+    } catch (err) {
+      console.warn(`[reasoner] ${model} failed: ${(err as Error).message}`);
+    }
+  }
+  throw new Error("All OpenRouter models failed");
 }
 
 // ─── Exported ─────────────────────────────────────────────────────────────────

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' tsx src/index.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
