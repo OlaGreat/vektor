@@ -1,5 +1,6 @@
 "use client";
-
+// import '@initia/interwovenkit-react/dist/styles.css';
+import '@initia/interwovenkit-react/styles.css';
 import { InterwovenKitProvider, TESTNET } from "@initia/interwovenkit-react";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,7 +11,7 @@ const wagmiConfig = createConfig({
   chains: [mainnet],
   transports: { [mainnet.id]: http() },
   ssr: true,
-  reconnectOnMount: false,
+  // reconnectOnMount: true,
 });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
